@@ -3,6 +3,8 @@
 use druid::widget::{Button, Flex, Label};
 use druid::{AppLauncher, LocalizedString, PlatformError, Widget, WidgetExt, WindowDesc};
 
+mod mail;
+
 fn main() -> Result<(), PlatformError> {
     let main_window = WindowDesc::new(ui_builder());
     let data = 0_u32;
