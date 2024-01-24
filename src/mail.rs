@@ -21,7 +21,8 @@ pub(crate) enum MailAgentMessages {}
 /// As far as the main thread is concerned, this struct is only useful for
 /// interactions with `rx`.
 pub(crate) struct MailAgent {
-    /// The crossbeam channel transmitter for MailAgentMessages to the MailAgent thread
+    /// The crossbeam channel transmitter for MailAgentMessages to the
+    /// MailAgent thread
     tx: Sender<MailAgentMessages>,
     /// The crossbeam_channel receiver for MailAgentMessages from the MailAgent
     /// thread
