@@ -55,4 +55,4 @@ wildcard_dependencies = "warn"
 workspace = true
 
 [dependencies]
-xilem_core = { git = "https://github.com/linebender/xilem", version = "0.1.0" }
+druid = "0.8.3"
