@@ -48,3 +48,6 @@ wildcard_dependencies = "warn"
 
 [lints]
 workspace = true
+
+[dependencies]
+xilem_core = { git = "https://github.com/linebender/xilem", version = "0.1.0" }

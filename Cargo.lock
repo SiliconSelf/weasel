@@ -5,3 +5,11 @@ version = 3
 [[package]]
 name = "weasel"
 version = "0.1.0"
+dependencies = [
+ "xilem_core",
+]
+
+[[package]]
+name = "xilem_core"
+version = "0.1.0"
+source = "git+https://github.com/linebender/xilem#ea45b9f8c14e3708f0fcbe0a0e1c760f59146323"
