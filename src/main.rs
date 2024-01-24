@@ -4,6 +4,7 @@ use druid::widget::{Button, Flex, Label};
 use druid::{AppLauncher, LocalizedString, PlatformError, Widget, WidgetExt, WindowDesc};
 
 mod mail;
+mod config;
 
 fn main() -> Result<(), PlatformError> {
     let main_window = WindowDesc::new(ui_builder());
