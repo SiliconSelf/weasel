@@ -4,14 +4,16 @@
 
 use std::{thread::JoinHandle, time::Duration};
 
-use crossbeam_channel::{unbounded, Receiver};
+use crossbeam_channel::{unbounded, Receiver, Sender};
 
+/// Contains the logic for the mail agent thread
 fn mail_agent_thread() {
     loop {
         std::thread::sleep(Duration::from_millis(250));
     }
 }
 
+/// Messages that can be sent to and from the mail agent and the main thread
 pub(crate) enum MailAgentMessages {}
 
 /// A struct that owns the thread that handles mail operations.
@@ -19,6 +21,8 @@ pub(crate) enum MailAgentMessages {}
 /// As far as the main thread is concerned, this struct is only useful for
 /// interactions with `rx`.
 pub(crate) struct MailAgent {
+    /// The crossbeam channel transmitter for MailAgentMessages to the MailAgent thread
+    tx: Sender<MailAgentMessages>,
     /// The crossbeam_channel receiver for MailAgentMessages from the MailAgent
     /// thread
     rx: Receiver<MailAgentMessages>,
@@ -33,9 +37,10 @@ pub(crate) struct MailAgent {
 impl MailAgent {
     /// Instantiates a new `MailAgent`, also creating the associated thread.
     pub(crate) fn new() -> Self {
-        let (_tx, rx) = unbounded();
+        let (tx, rx) = unbounded();
         let handle = std::thread::spawn(mail_agent_thread);
         Self {
+            tx,
             rx,
             handle,
         }

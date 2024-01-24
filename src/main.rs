@@ -9,6 +9,7 @@ mod config;
 mod mail;
 
 fn main() -> Result<(), PlatformError> {
+    let _mail_agent = mail::MailAgent::new();
     let main_window = WindowDesc::new(ui_builder());
     let data = 0_u32;
     AppLauncher::with_window(main_window).log_to_console().launch(data)
