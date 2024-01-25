@@ -6,10 +6,22 @@ use std::{thread::JoinHandle, time::Duration};
 
 use crossbeam_channel::{unbounded, Receiver, Sender};
 
+use crate::config::GLOBAL_CONFIG;
+
 /// Contains the logic for the mail agent thread
 fn mail_agent_thread() {
     log::trace!("MailAgent has started");
+    let accounts = {
+        let config_handle = GLOBAL_CONFIG.read();
+        let config = config_handle.get().expect("Program is not configured!");
+        config.get_accounts().clone()
+    };
+    log::debug!("Loaded accounts to follow:");
+    for account in accounts {
+        log::debug!("{}", &account.address);
+    }
     loop {
+        // TODO: Actually do mail shit lmao
         std::thread::sleep(Duration::from_millis(250));
     }
 }
