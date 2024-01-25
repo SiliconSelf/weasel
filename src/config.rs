@@ -1,7 +1,7 @@
 //! Holds the global program configuration
 //!
 //! This module contains the struct of the global program configuration as well
-//! as the crate-available lazily-evaluated static value GLOBAL_CONFIG, which
+//! as the crate-available lazily-evaluated static value `GLOBAL_CONFIG`, which
 //! serves as a thread-safe single source of truth for program configuration.
 
 use once_cell::sync::Lazy;
