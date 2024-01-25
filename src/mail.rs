@@ -171,9 +171,10 @@ fn fetch_mailbox(
     for m in &messages {
         returned.push(m.message);
         if let Some(header) = m.header() {
-            let Ok(headers) = parse_headers(header) else {
-                panic!("")
-            };
+            let Ok(headers) = parse_headers(header) else { panic!("") };
+            for (k, v) in headers {
+                log::debug!("{k}: {v}");
+            }
         } else {
             log::warn!("No body");
         }
@@ -216,7 +217,6 @@ fn parse_headers(
         let Some(character) = header.next() else {
             break;
         };
-        buffer.push(character);
         if character == '\n' {
             if let Some(next_character) = header.next() {
                 if !next_character.is_whitespace() {
@@ -225,7 +225,6 @@ fn parse_headers(
                         .map(str::trim)
                         .map(std::string::ToString::to_string)
                         .collect();
-                    log::debug!("{split:?}");
                     // FIXME: This is pretty reckless. Should probably fix it
                     // later.
                     headers_map
@@ -233,7 +232,9 @@ fn parse_headers(
                     buffer = String::from(next_character);
                 }
             }
+            continue;
         }
+        buffer.push(character);
     }
     Ok(headers_map)
 }
