@@ -2529,6 +2529,7 @@ dependencies = [
  "imap",
  "log 0.4.20",
  "mail",
+ "native-tls",
  "once_cell",
  "parking_lot",
  "serde",
