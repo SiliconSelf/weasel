@@ -151,10 +151,11 @@ fn fetch_mailbox(account: &Account, mailbox: &str) -> Result<(), ImapErrors> {
     if imap_session.select(mailbox).is_err() {
         return Err(ImapErrors::Select);
     };
-    let Ok(messages) = imap_session.fetch("1", "RFC822") else {
+    let Ok(messages) = imap_session.fetch("*", "RFC822") else {
         return Err(ImapErrors::Fetch);
     };
-    if let Some(m) = messages.iter().next() {
+
+    for m in &messages {
         if let Some(body) = m.body() {
             if let Ok(body) = std::str::from_utf8(body) {
                 log::info!("{body}");
