@@ -39,21 +39,33 @@ pub(crate) fn init() {
 /// Represents a single email account for the `MailAgent` to manage
 #[derive(Serialize, Deserialize, Clone)]
 pub(crate) struct Account {
+    /// Email address
     pub(crate) address: String,
+    /// Domain name to use for SMTP
     pub(crate) smtp_address: String,
+    /// Password for the SMTP account
     pub(crate) smtp_password: String,
+    /// Port to use for the SMTP server
     pub(crate) smtp_port: u16,
+    /// Domain name to use for IMAP
     pub(crate) imap_address: String,
+    /// Password to use for the IMAP account
     pub(crate) imap_password: String,
+    /// Port to use for the IMAP server
     pub(crate) imap_port: u16,
 }
 
+/// Data structure that represents the global program configuration.
+/// 
+/// Do not derive Debug for this struct. It contains sensitive information!
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub(crate) struct Config {
+    /// Accounts for the MailAgent to manage
     accounts: Vec<Account>,
 }
 
 impl Config {
+    /// Gets an immutable reference to the accounts in the program configuration
     pub(crate) fn get_accounts(&self) -> &Vec<Account> {
         &self.accounts
     }
