@@ -7,8 +7,10 @@ use druid::{
 
 mod config;
 mod mail;
+mod database;
 
-fn main() -> Result<(), PlatformError> {
+#[tokio::main]
+async fn main() -> Result<(), PlatformError> {
     config::init();
     simple_logger::init().expect("Failed to initialize logging");
     let (mail_tx, mail_rx, mail_agent) = mail::MailAgent::new();
