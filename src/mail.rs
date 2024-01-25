@@ -161,10 +161,9 @@ fn fetch_mailbox(
     if imap_session.select(mailbox).is_err() {
         return Err(ImapErrors::Select);
     };
-    // let Ok(messages) = imap_session.fetch("* (FLAGS BODY[HEADER.FIELDS (DATE
-    // FROM)])", "RFC822") else {     return Err(ImapErrors::Fetch);
-    // };
-    let messages = imap_session.fetch("*", "BODY[HEADER]").unwrap();
+    let Ok(messages) = imap_session.fetch("* (FLAGS BODY[HEADER.FIELDS (DATE
+    FROM)])", "RFC822") else {     return Err(ImapErrors::Fetch);
+    };
 
     let mut returned = Vec::new();
 
