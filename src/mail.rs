@@ -8,6 +8,7 @@ use crossbeam_channel::{unbounded, Receiver, Sender};
 
 /// Contains the logic for the mail agent thread
 fn mail_agent_thread() {
+    log::trace!("MailAgent has started");
     loop {
         std::thread::sleep(Duration::from_millis(250));
     }
