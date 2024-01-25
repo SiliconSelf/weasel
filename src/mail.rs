@@ -2,7 +2,9 @@
 //!
 //! The star of the show for this crate is `MailAgent`
 
-use std::{thread::JoinHandle, time::Duration};
+use std::{
+    collections::HashMap, mem::take, thread::JoinHandle, time::Duration,
+};
 
 use crossbeam_channel::{unbounded, Receiver, Sender};
 use serde::{Deserialize, Serialize};
@@ -52,12 +54,12 @@ pub(crate) enum MainThreadMessages {
 /// Messages that can be sent from `mail_agent_thread` to the main thread
 #[derive(Display)]
 pub(crate) enum MailThreadMessages {
-    NewEmail(IMAPEmail),
+    NewEmail(ImapEmail),
 }
 
 /// Represents an email retrieved through IMAP
 #[derive(Serialize, Deserialize)]
-pub(crate) struct IMAPEmail {}
+pub(crate) struct ImapEmail {}
 
 /// Contains the logic for the mail agent thread
 fn mail_agent_thread(
@@ -66,10 +68,15 @@ fn mail_agent_thread(
 ) {
     log::trace!("MailAgent has started");
     let mut config = load_config();
-    log::debug!("Loaded accounts to follow:");
-    for account in config.get_accounts() {
-        log::debug!("{}", &account.address);
-    }
+    let mut messages: HashMap<u32, ImapEmail> = HashMap::new();
+    log::debug!(
+        "Loaded accounts: {:?}",
+        config
+            .get_accounts()
+            .iter()
+            .map(|a| a.address.clone())
+            .collect::<Vec<String>>()
+    );
     loop {
         let message = match rx.try_recv() {
             Ok(m) => Some(m),
@@ -131,7 +138,10 @@ pub(crate) enum ImapErrors {
 }
 
 /// Fetch the inbox for a given account
-fn fetch_mailbox(account: &Account, mailbox: &str) -> Result<(), ImapErrors> {
+fn fetch_mailbox(
+    account: &Account,
+    mailbox: &str,
+) -> Result<Vec<(u32, ImapEmail)>, ImapErrors> {
     let tls = native_tls::TlsConnector::builder().build().expect(
         "Failed to build TLS Connector. The application will never work \
          without this.",
@@ -151,19 +161,57 @@ fn fetch_mailbox(account: &Account, mailbox: &str) -> Result<(), ImapErrors> {
     if imap_session.select(mailbox).is_err() {
         return Err(ImapErrors::Select);
     };
-    let Ok(messages) = imap_session.fetch("*", "RFC822") else {
-        return Err(ImapErrors::Fetch);
-    };
+    // let Ok(messages) = imap_session.fetch("* (FLAGS BODY[HEADER.FIELDS (DATE
+    // FROM)])", "RFC822") else {     return Err(ImapErrors::Fetch);
+    // };
+    let messages = imap_session.fetch("*", "BODY[HEADER]").unwrap();
+
+    let mut returned = Vec::new();
 
     for m in &messages {
-        if let Some(body) = m.body() {
-            if let Ok(body) = std::str::from_utf8(body) {
-                log::info!("{body}");
-            }
+        returned.push(m.message);
+        if let Some(header) = m.header() {
+            let Ok(headers) = parse_headers(header) else { panic!("") };
+        } else {
+            log::warn!("No body");
         }
     }
     if imap_session.logout().is_err() {
         return Err(ImapErrors::Logout);
     };
-    Ok(())
+
+    todo!();
+}
+
+enum ParseHeaderErrors {
+    NotUtf8
+}
+
+/// Parse a binary representation of message headers to make them something
+/// useful instead of the format the braindead lobotomites cooked up in the
+/// early 2000s
+///
+/// Message headers are separated by newline characters, but header values can
+/// contain newline characters as long as they're before any whitespace
+/// character.
+fn parse_headers(data: &[u8]) -> Result<HashMap<String, String>, ParseHeaderErrors> {
+    let Ok(header) = std::str::from_utf8(data) else { return Err(ParseHeaderErrors::NotUtf8); };
+    let mut headers_map: HashMap<String, String> = HashMap::new();
+    let mut header = header.chars();
+    let mut buffer = String::new();
+    loop {
+        let Some(character) = header.next() else { break; };
+        buffer.push(character);
+        if character == '\n' {
+            if let Some(next_character) = header.next() {
+                if !next_character.is_whitespace() {
+                    let mut split: Vec<String> = buffer.split(':').map(str::trim).map(std::string::ToString::to_string).collect();
+                    log::debug!("{split:?}");
+                    headers_map.insert(take(&mut split[0]), take(&mut split[1]));
+                    buffer = String::from(next_character);
+                }
+            }
+        }
+    }
+    Ok(headers_map)
 }
