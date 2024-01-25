@@ -1,8 +1,8 @@
 //! Holds the global program configuration
 //!
 //! This module contains the struct of the global program configuration as well
-//! as the crate-available lazily-evaluated static value `GLOBAL_CONFIG`, which
-//! serves as a thread-safe single source of truth for program configuration.
+//! as the static value `GLOBAL_CONFIG`, which serves as a thread-safe single
+//! source of truth for program configuration.
 
 use figment::{
     providers::{Env, Format, Serialized, Toml},
@@ -56,7 +56,7 @@ pub(crate) struct Account {
 }
 
 /// Data structure that represents the global program configuration.
-/// 
+///
 /// Do not derive Debug for this struct. It contains sensitive information!
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub(crate) struct Config {
