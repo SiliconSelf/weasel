@@ -171,7 +171,9 @@ fn fetch_mailbox(
     for m in &messages {
         returned.push(m.message);
         if let Some(header) = m.header() {
-            let Ok(headers) = parse_headers(header) else { panic!("") };
+            let Ok(headers) = parse_headers(header) else {
+                panic!("")
+            };
         } else {
             log::warn!("No body");
         }
@@ -183,8 +185,10 @@ fn fetch_mailbox(
     todo!();
 }
 
+/// Errors that can occur while parsing email headers
 enum ParseHeaderErrors {
-    NotUtf8
+    /// The header data was not valid UTF-8
+    NotUtf8,
 }
 
 /// Parse a binary representation of message headers to make them something
@@ -194,20 +198,38 @@ enum ParseHeaderErrors {
 /// Message headers are separated by newline characters, but header values can
 /// contain newline characters as long as they're before any whitespace
 /// character.
-fn parse_headers(data: &[u8]) -> Result<HashMap<String, String>, ParseHeaderErrors> {
-    let Ok(header) = std::str::from_utf8(data) else { return Err(ParseHeaderErrors::NotUtf8); };
+///
+/// This function does some pretty heinous memory allocations and is probably
+/// far more expensive than it has any right to be because of it. It should
+/// probably be rewritten at some point in the future because parsing email
+/// headers is a pretty common task for an email client.
+fn parse_headers(
+    data: &[u8],
+) -> Result<HashMap<String, String>, ParseHeaderErrors> {
+    let Ok(header) = std::str::from_utf8(data) else {
+        return Err(ParseHeaderErrors::NotUtf8);
+    };
     let mut headers_map: HashMap<String, String> = HashMap::new();
     let mut header = header.chars();
     let mut buffer = String::new();
     loop {
-        let Some(character) = header.next() else { break; };
+        let Some(character) = header.next() else {
+            break;
+        };
         buffer.push(character);
         if character == '\n' {
             if let Some(next_character) = header.next() {
                 if !next_character.is_whitespace() {
-                    let mut split: Vec<String> = buffer.split(':').map(str::trim).map(std::string::ToString::to_string).collect();
+                    let mut split: Vec<String> = buffer
+                        .split(':')
+                        .map(str::trim)
+                        .map(std::string::ToString::to_string)
+                        .collect();
                     log::debug!("{split:?}");
-                    headers_map.insert(take(&mut split[0]), take(&mut split[1]));
+                    // FIXME: This is pretty reckless. Should probably fix it
+                    // later.
+                    headers_map
+                        .insert(take(&mut split[0]), take(&mut split[1]));
                     buffer = String::from(next_character);
                 }
             }
