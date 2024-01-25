@@ -5,11 +5,10 @@
 use std::{thread::JoinHandle, time::Duration};
 
 use crossbeam_channel::{unbounded, Receiver, Sender};
+use serde::{Deserialize, Serialize};
 use strum_macros::Display;
 
 use crate::config::{Account, Config, GLOBAL_CONFIG};
-
-use serde::{Serialize, Deserialize};
 
 /// A struct that owns the thread that handles mail operations.
 ///
@@ -26,7 +25,8 @@ pub(crate) struct MailAgent {
 
 impl MailAgent {
     /// Instantiates a new `MailAgent`, also creating the associated thread.
-    pub(crate) fn new() -> (Sender<MainThreadMessages>, Receiver<MailThreadMessages>, Self) {
+    pub(crate) fn new(
+    ) -> (Sender<MainThreadMessages>, Receiver<MailThreadMessages>, Self) {
         let (main_tx, thread_rx) = unbounded();
         let (thread_tx, main_rx) = unbounded();
         let handle =
@@ -46,20 +46,18 @@ pub(crate) enum MainThreadMessages {
     /// Reload the configuration to update behavior
     ReloadConfig,
     /// Fetch inboxes from IMAP
-    FetchIMAP
+    FetchIMAP,
 }
 
 /// Messages that can be sent from `mail_agent_thread` to the main thread
 #[derive(Display)]
 pub(crate) enum MailThreadMessages {
-    NewEmail(IMAPEmail)
+    NewEmail(IMAPEmail),
 }
 
 /// Represents an email retrieved through IMAP
 #[derive(Serialize, Deserialize)]
-pub(crate) struct IMAPEmail {
-
-}
+pub(crate) struct IMAPEmail {}
 
 /// Contains the logic for the mail agent thread
 fn mail_agent_thread(
@@ -115,12 +113,20 @@ fn load_config() -> Config {
 }
 
 /// Fetch the inbox for a given account
-/// 
-/// This function is currently wild unsafe and uses unwrap() on almost every line. It needs to be rewritten,
+///
+/// This function is currently wildly unreliable and uses unwrap() on almost
+/// every line. It needs to be rewritten,
 fn fetch_inbox(account: &Account) {
     let tls = native_tls::TlsConnector::builder().build().unwrap();
-    let client = imap::connect((account.imap_address.clone(), account.imap_port), account.imap_address.clone(), &tls).unwrap();
-    let mut imap_session = client.login(account.address.clone(), account.imap_password.clone()).unwrap();
+    let client = imap::connect(
+        (account.imap_address.clone(), account.imap_port),
+        account.imap_address.clone(),
+        &tls,
+    )
+    .unwrap();
+    let mut imap_session = client
+        .login(account.address.clone(), account.imap_password.clone())
+        .unwrap();
     imap_session.select("INBOX").unwrap();
     let messages = imap_session.fetch("1", "RFC822").unwrap();
     if let Some(m) = messages.iter().next() {

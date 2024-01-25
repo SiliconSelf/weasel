@@ -14,7 +14,9 @@ fn main() -> Result<(), PlatformError> {
     let (mail_tx, mail_rx, mail_agent) = mail::MailAgent::new();
     let main_window = WindowDesc::new(ui_builder());
     let data = 0_u32;
-    mail_tx.send(mail::MainThreadMessages::FetchIMAP);
+    mail_tx
+        .send(mail::MainThreadMessages::FetchIMAP)
+        .expect("Channel to the mail agent thread has closed");
     AppLauncher::with_window(main_window).log_to_console().launch(data)
 }
 
