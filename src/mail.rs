@@ -19,8 +19,8 @@ fn load_config() -> Config {
 
 /// Contains the logic for the mail agent thread
 fn mail_agent_thread(
-    tx: Sender<MailAgentMessages>,
-    rx: Receiver<MailAgentMessages>,
+    tx: Sender<MainThreadMessages>,
+    rx: Receiver<MainThreadMessages>,
 ) {
     log::trace!("MailAgent has started");
     let mut config = load_config();
@@ -42,10 +42,10 @@ fn mail_agent_thread(
         if let Some(m) = message {
             log::trace!("Received command {m}");
             match m {
-                MailAgentMessages::Shutdown => {
+                MainThreadMessages::Shutdown => {
                     return;
                 }
-                MailAgentMessages::ReloadConfig => {
+                MainThreadMessages::ReloadConfig => {
                     config = load_config();
                 }
             }
@@ -53,13 +53,19 @@ fn mail_agent_thread(
     }
 }
 
-/// Messages that can be sent to and from the mail agent and the main thread
+/// Messages that can be sent from the main thread to the `mail_agent_thread`
 #[derive(Display)]
-pub(crate) enum MailAgentMessages {
+pub(crate) enum MainThreadMessages {
     /// Shut down the thread for graceful program exit
     Shutdown,
     /// Reload the configuration to update behavior
     ReloadConfig,
+}
+
+/// Messages that can be sent from `mail_agent_thread` to the main thread
+#[derive(Display)]
+pub(crate) enum MailThreadMessages {
+
 }
 
 /// A struct that owns the thread that handles mail operations.
@@ -69,10 +75,10 @@ pub(crate) enum MailAgentMessages {
 pub(crate) struct MailAgent {
     /// The crossbeam channel transmitter for MailAgentMessages to the
     /// MailAgent thread
-    tx: Sender<MailAgentMessages>,
+    tx: Sender<MainThreadMessages>,
     /// The crossbeam_channel receiver for MailAgentMessages from the MailAgent
     /// thread
-    rx: Receiver<MailAgentMessages>,
+    rx: Receiver<MainThreadMessages>,
     /// The JoinHandle for the thread.
     ///
     /// This really only exists to maintain ownership throughout the lifetime
@@ -95,7 +101,7 @@ impl MailAgent {
         }
     }
     /// Send a message to the mail agent thread. This is the primary function the main thread should interact with the `MailAgent` through.
-    pub(crate) fn send_message(&self, message: MailAgentMessages) {
+    pub(crate) fn send_message(&self, message: MainThreadMessages) {
         self.tx.send(message).expect("MailAgent channel has become disconnected");
     }
 }
