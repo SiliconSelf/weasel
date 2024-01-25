@@ -11,9 +11,10 @@ mod mail;
 fn main() -> Result<(), PlatformError> {
     config::init();
     simple_logger::init().expect("Failed to initialize logging");
-    let _mail_agent = mail::MailAgent::new();
+    let mail_agent = mail::MailAgent::new();
     let main_window = WindowDesc::new(ui_builder());
     let data = 0_u32;
+    mail_agent.send_message(mail::MailAgentMessages::ReloadConfig);
     AppLauncher::with_window(main_window).log_to_console().launch(data)
 }
 
