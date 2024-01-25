@@ -137,14 +137,14 @@ fn fetch_mailbox(account: &Account, mailbox: &str) -> Result<(), ImapErrors> {
          without this.",
     );
     let Ok(client) = imap::connect(
-        (account.imap_address.clone(), account.imap_port),
-        account.imap_address.clone(),
+        (&*account.imap_address, account.imap_port),
+        &*account.imap_address,
         &tls,
     ) else {
         return Err(ImapErrors::Connect);
     };
     let Ok(mut imap_session) =
-        client.login(account.address.clone(), account.imap_password.clone())
+        client.login(&*account.address, &*account.imap_password)
     else {
         return Err(ImapErrors::Login);
     };
