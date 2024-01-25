@@ -115,32 +115,45 @@ fn load_config() -> Config {
 /// Errors that can occur while interacting with IMAP
 #[derive(Debug)]
 pub(crate) enum ImapErrors {
-    /// The TLS connector cannot connect to the given inbox. A wrong domain or port was probably given.
+    /// The TLS connector cannot connect to the given inbox. A wrong domain or
+    /// port was probably given.
     Connect,
-    /// The IMAP client can't login to the server. The account is probably misconfigured with a wrong username or password.
+    /// The IMAP client can't login to the server. The account is probably
+    /// misconfigured with a wrong username or password.
     Login,
     /// The client can't select the given inbox
     Select,
     /// The client can't fetch messages from the given inbox
     Fetch,
-    /// The client failed to logout. I'm honestly not sure how this would happen, but it can.
-    Logout
+    /// The client failed to logout. I'm honestly not sure how this would
+    /// happen, but it can.
+    Logout,
 }
 
 /// Fetch the inbox for a given account
 fn fetch_mailbox(account: &Account, mailbox: &str) -> Result<(), ImapErrors> {
-    let tls = native_tls::TlsConnector::builder().build().expect("Failed to build TLS Connector. The application will never work without this.");
+    let tls = native_tls::TlsConnector::builder().build().expect(
+        "Failed to build TLS Connector. The application will never work \
+         without this.",
+    );
     let Ok(client) = imap::connect(
         (account.imap_address.clone(), account.imap_port),
         account.imap_address.clone(),
         &tls,
-    ) else { return Err(ImapErrors::Connect); };
-    let Ok(mut imap_session) = client
-        .login(account.address.clone(), account.imap_password.clone()) else {
-            return Err(ImapErrors::Login);
-        };
-    if imap_session.select(mailbox).is_err() { return Err(ImapErrors::Select); };
-    let Ok(messages) = imap_session.fetch("1", "RFC822") else { return Err(ImapErrors::Fetch); };
+    ) else {
+        return Err(ImapErrors::Connect);
+    };
+    let Ok(mut imap_session) =
+        client.login(account.address.clone(), account.imap_password.clone())
+    else {
+        return Err(ImapErrors::Login);
+    };
+    if imap_session.select(mailbox).is_err() {
+        return Err(ImapErrors::Select);
+    };
+    let Ok(messages) = imap_session.fetch("1", "RFC822") else {
+        return Err(ImapErrors::Fetch);
+    };
     if let Some(m) = messages.iter().next() {
         if let Some(body) = m.body() {
             if let Ok(body) = std::str::from_utf8(body) {
@@ -148,6 +161,8 @@ fn fetch_mailbox(account: &Account, mailbox: &str) -> Result<(), ImapErrors> {
             }
         }
     }
-    if imap_session.logout().is_err() { return Err(ImapErrors::Logout); };
+    if imap_session.logout().is_err() {
+        return Err(ImapErrors::Logout);
+    };
     Ok(())
 }
