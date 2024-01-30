@@ -9,12 +9,10 @@ use figment::{
     Figment,
 };
 use once_cell::sync::OnceCell;
-use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 
 /// Contains the thread-safe global configuration
-pub(crate) static GLOBAL_CONFIG: RwLock<OnceCell<Config>> =
-    RwLock::new(OnceCell::new());
+pub(crate) static GLOBAL_CONFIG: OnceCell<Config> = OnceCell::new();
 
 /// Initialize the `GLOBAL_CONFIG` static
 ///
@@ -29,8 +27,7 @@ pub(crate) fn init() {
         .merge(Env::prefixed("WEASEL_"))
         .extract()
         .expect("Failed to load program configuration from environment");
-    let write_handle = GLOBAL_CONFIG.write();
-    write_handle.set(config).unwrap_or_else(|_| {
+    GLOBAL_CONFIG.set(config).unwrap_or_else(|_| {
         panic!("Failed to set GLOBAL_CONFIG");
     });
     log::debug!("Loaded program configuration");

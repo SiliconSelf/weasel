@@ -55,7 +55,7 @@ wildcard_dependencies = "warn"
 workspace = true
 
 [dependencies]
-crossbeam-channel = "0.5.11"
+actix = "0.13.1"
 druid = "0.8.3"
 figment = { version = "0.10.14", features = ["toml", "env"] }
 imap = "2.4.1"
@@ -66,7 +66,5 @@ once_cell = "1.19.0"
 parking_lot = "0.12.1"
 serde = { version = "1.0.196", features = ["derive"] }
 simple_logger = "4.3.3"
-strum = { version = "0.26.1", features = ["derive"] }
-strum_macros = "0.25.3"
 surrealdb = { version = "1.1.1", features = ["kv-mem"] }
 tokio = { version = "1.35.1", features = ["full"] }

@@ -1,24 +1,31 @@
 #![doc = include_str!("../README.md")]
 
+use actix::Actor;
 use druid::{
     widget::{Button, Flex, Label},
     AppLauncher, LocalizedString, PlatformError, Widget, WidgetExt, WindowDesc,
 };
 
 mod config;
-mod mail;
 mod database;
+mod mail;
 
-#[tokio::main]
+use mail::MailActor;
+
+#[actix::main]
 async fn main() -> Result<(), PlatformError> {
     config::init();
     simple_logger::init().expect("Failed to initialize logging");
-    let (mail_tx, mail_rx, mail_agent) = mail::MailAgent::new();
+
+    let config = config::GLOBAL_CONFIG.get().expect("Configuration has not been initialized");
+
+    // Start mail actors for all accounts
+    for user in config.get_accounts() {
+        MailActor::create(|_| { MailActor::new(user) });
+    }
+
     let main_window = WindowDesc::new(ui_builder());
     let data = 0_u32;
-    mail_tx
-        .send(mail::MainThreadMessages::FetchIMAP)
-        .expect("Channel to the mail agent thread has closed");
     AppLauncher::with_window(main_window).log_to_console().launch(data)
 }
 

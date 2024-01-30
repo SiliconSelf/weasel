@@ -96,8 +96,7 @@ fn parse_headers(
 
 /// Fetch the inbox for a given account
 pub(crate) fn fetch_mailbox(
-    account: &Account,
-    mailbox: &str,
+    account: &Account, mailbox: &str,
 ) -> Result<Vec<(u32, ImapEmail)>, Errors> {
     let tls = native_tls::TlsConnector::builder().build().expect(
         "Failed to build TLS Connector. The application will never work \
