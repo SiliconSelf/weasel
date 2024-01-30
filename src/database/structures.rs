@@ -1,6 +1,5 @@
-use std::collections::HashMap;
-
 use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
 
 use crate::mail::ImapEmail;
 
@@ -14,14 +13,18 @@ pub(crate) struct ContactRecord {
 /// Represents an individual retrieved through IMAP
 #[derive(Serialize, Deserialize)]
 pub(crate) struct EmailRecord {
-    /// The email headers
-    headers: HashMap<String, String>,
+    uid: u32,
+    date: Option<OffsetDateTime>,
+    subject: Option<String>,
+
 }
 
 impl From<ImapEmail> for EmailRecord {
     fn from(value: ImapEmail) -> Self {
         Self {
-            headers: value.headers,
+            uid: value.uid,
+            date: value.envelope.date,
+            subject: value.envelope.subject
         }
     }
 }

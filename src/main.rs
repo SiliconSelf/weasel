@@ -31,10 +31,11 @@ async fn main() -> Result<(), PlatformError> {
     let database_actor = DatabaseActor::create(|_| actor);
 
     // Start mail actors for all accounts
-    let mut addresses: HashMap<String, Addr<MailActor>> = HashMap::new();
+    let mut mail_actors: HashMap<String, Addr<MailActor>> = HashMap::new();
     for user in config.get_accounts() {
         let addr = MailActor::create(|_| MailActor::new(user.clone(), database_actor.clone()));
-        addresses.insert(user.address.clone(), addr);
+        addr.send(FetchMessage { mailbox: "INBOX".to_owned() }).await.unwrap();
+        mail_actors.insert(user.address.clone(), addr);
     }
 
     let main_window = WindowDesc::new(ui_builder());

@@ -60,7 +60,7 @@ impl Handler<FetchMessage> for MailActor {
                     return Err(e);
                 }
             };
-        for (_, message) in mail {
+        for message in mail {
             self.db_address.do_send(NewEmailMessage {
                 email: message,
             });
