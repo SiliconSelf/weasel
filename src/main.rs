@@ -17,11 +17,13 @@ async fn main() -> Result<(), PlatformError> {
     config::init();
     simple_logger::init().expect("Failed to initialize logging");
 
-    let config = config::GLOBAL_CONFIG.get().expect("Configuration has not been initialized");
+    let config = config::GLOBAL_CONFIG
+        .get()
+        .expect("Configuration has not been initialized");
 
     // Start mail actors for all accounts
     for user in config.get_accounts() {
-        MailActor::create(|_| { MailActor::new(user) });
+        MailActor::create(|_| MailActor::new(user));
     }
 
     let main_window = WindowDesc::new(ui_builder());
