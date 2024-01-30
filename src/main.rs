@@ -10,20 +10,27 @@ mod config;
 mod database;
 mod mail;
 
+use database::DatabaseActor;
 use mail::MailActor;
 
 #[actix::main]
 async fn main() -> Result<(), PlatformError> {
-    config::init();
     simple_logger::init().expect("Failed to initialize logging");
+
+    config::init();
 
     let config = config::GLOBAL_CONFIG
         .get()
         .expect("Configuration has not been initialized");
 
+    // Start database actor. This is split into two lines because async closures
+    // aren't stable yet.
+    let actor = DatabaseActor::new().await;
+    let database_actor = DatabaseActor::create(|_| actor);
+
     // Start mail actors for all accounts
     for user in config.get_accounts() {
-        MailActor::create(|_| MailActor::new(user));
+        MailActor::create(|_| MailActor::new(user, database_actor.clone()));
     }
 
     let main_window = WindowDesc::new(ui_builder());

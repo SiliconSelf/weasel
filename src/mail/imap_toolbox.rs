@@ -1,26 +1,13 @@
 //! Various tools for handling IMAP functionality
 
-use std::{collections::HashMap, mem::take, time::SystemTime};
+use std::{collections::HashMap, mem::take};
 
 use crate::config::Account;
-
-pub(crate) struct Envelope {
-    subject: Option<String>,
-    from: Option<Vec<String>>,
-    sender: Option<Vec<String>>,
-    reply_to: Option<Vec<String>>,
-    to: Option<Vec<String>>,
-    cc: Option<Vec<String>>,
-    bcc: Option<Vec<String>>,
-    in_reply_to: Option<Vec<String>>,
-}
 
 /// Represents an email retrieved through IMAP
 pub(crate) struct ImapEmail {
     /// Headers of the email
-    headers: HashMap<String, String>,
-    /// Envelope
-    envelope: Option<Envelope>,
+    _headers: HashMap<String, String>,
 }
 
 /// Errors that can occur while interacting with IMAP

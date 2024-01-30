@@ -1,9 +1,13 @@
-//! Database related functionality
-
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
-use surrealdb::{engine::local::Mem, sql::Thing, Surreal};
+
+/// Represents a contact from the emails
+#[derive(Serialize, Deserialize)]
+pub(crate) struct Contact {
+    /// The person's email address
+    address: String,
+}
 
 /// Represents an individual retrieved through IMAP
 #[derive(Serialize, Deserialize)]

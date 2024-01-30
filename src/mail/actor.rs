@@ -5,18 +5,22 @@
 use actix::prelude::*;
 
 use super::imap_toolbox::{self, Errors, ImapEmail};
-use crate::config::Account;
+use crate::{config::Account, database::DatabaseActor};
+
 /// An actor that handles all transactions for a given email account
 pub(crate) struct MailActor {
     /// The address this actor represents
     pub(crate) account: Account,
+    /// Address of the database actor for inter-actor communication
+    _db_address: Addr<DatabaseActor>
 }
 
 impl MailActor {
     /// Creates a new actor for a given account
-    pub(crate) fn new(account: &Account) -> Self {
+    pub(crate) fn new(account: &Account, db_address: Addr<DatabaseActor>) -> Self {
         Self {
             account: account.clone(),
+            _db_address: db_address
         }
     }
 }
