@@ -58,6 +58,7 @@ workspace = true
 actix = "0.13.1"
 druid = "0.8.3"
 figment = { version = "0.10.14", features = ["toml", "env"] }
+futures = "0.3.30"
 imap = "2.4.1"
 log = "0.4.20"
 mail = "0.7.0"

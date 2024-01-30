@@ -5150,6 +5150,7 @@ dependencies = [
  "actix",
  "druid",
  "figment",
+ "futures 0.3.30",
  "imap",
  "log 0.4.20",
  "mail",
