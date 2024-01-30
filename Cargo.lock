@@ -5155,11 +5155,9 @@ dependencies = [
  "mail",
  "native-tls",
  "once_cell",
- "parking_lot",
  "serde",
  "simple_logger",
  "surrealdb",
- "tokio",
 ]
 
 [[package]]
