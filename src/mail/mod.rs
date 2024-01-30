@@ -4,3 +4,4 @@ mod actor;
 mod imap_toolbox;
 
 pub(crate) use actor::*;
+pub(crate) use imap_toolbox::*;

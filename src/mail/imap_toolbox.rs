@@ -7,7 +7,7 @@ use crate::config::Account;
 /// Represents an email retrieved through IMAP
 pub(crate) struct ImapEmail {
     /// Headers of the email
-    _headers: HashMap<String, String>,
+    pub(crate) headers: HashMap<String, String>,
 }
 
 /// Errors that can occur while interacting with IMAP
