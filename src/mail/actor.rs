@@ -21,11 +21,12 @@ pub(crate) struct MailActor {
 impl MailActor {
     /// Creates a new actor for a given account
     pub(crate) fn new(
-        account: &Account,
+        account: Account,
         db_address: Addr<DatabaseActor>,
     ) -> Self {
+        log::debug!("Created new actor for {}", account.address);
         Self {
-            account: account.clone(),
+            account,
             db_address,
         }
     }
@@ -40,7 +41,7 @@ impl Actor for MailActor {
 #[rtype(result = "Result<(), Errors>")]
 pub(crate) struct FetchMessage {
     /// Which mailbox to fetch
-    mailbox: String,
+    pub(crate) mailbox: String,
 }
 
 impl Handler<FetchMessage> for MailActor {

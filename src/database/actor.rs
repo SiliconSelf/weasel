@@ -18,6 +18,7 @@ impl DatabaseActor {
         let db = Surreal::new::<Mem>(())
             .await
             .expect("Failed to create in-memory surreal database");
+        log::debug!("Created database actor");
         Self {
             database: db,
         }
