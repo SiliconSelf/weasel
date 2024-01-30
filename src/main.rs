@@ -1,6 +1,8 @@
 #![doc = include_str!("../README.md")]
 
-use actix::Actor;
+use std::collections::HashMap;
+
+use actix::prelude::*;
 use druid::{
     widget::{Button, Flex, Label},
     AppLauncher, LocalizedString, PlatformError, Widget, WidgetExt, WindowDesc,
@@ -11,7 +13,7 @@ mod database;
 mod mail;
 
 use database::DatabaseActor;
-use mail::MailActor;
+use mail::{FetchMessage, MailActor};
 
 #[actix::main]
 async fn main() -> Result<(), PlatformError> {
