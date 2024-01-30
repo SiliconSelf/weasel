@@ -94,7 +94,7 @@ fn parse_headers(
     Ok(headers_map)
 }
 
-/// Fetch the inbox for a given account
+/// Fetch a mailbox for a given account
 pub(crate) fn fetch_mailbox(
     account: &Account, mailbox: &str,
 ) -> Result<Vec<(u32, ImapEmail)>, Errors> {
