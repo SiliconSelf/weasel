@@ -21,7 +21,7 @@ pub(crate) struct EmailRecord {
 impl From<ImapEmail> for EmailRecord {
     fn from(value: ImapEmail) -> Self {
         Self {
-            headers: value.headers
+            headers: value.headers,
         }
     }
 }
