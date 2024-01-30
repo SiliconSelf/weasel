@@ -4,7 +4,7 @@
 
 use actix::prelude::*;
 
-use super::imap_toolbox;
+use super::imap_toolbox::{self, Errors, ImapEmail};
 use crate::config::Account;
 /// An actor that handles all transactions for a given email account
 pub(crate) struct MailActor {
@@ -15,7 +15,9 @@ pub(crate) struct MailActor {
 impl MailActor {
     /// Creates a new actor for a given account
     pub(crate) fn new(account: &Account) -> Self {
-        Self { account: account.clone() }
+        Self {
+            account: account.clone(),
+        }
     }
 }
 
@@ -25,25 +27,22 @@ impl Actor for MailActor {
 
 /// A Message to fetch a given inbox from the account this actor represents
 #[derive(Message, Debug)]
-#[rtype(result = "Result<Vec<(u32, imap_toolbox::ImapEmail)>, \
-                  imap_toolbox::Errors>")]
+#[rtype(result = "Result<Vec<(u32, ImapEmail)>, Errors>")]
 pub(crate) struct FetchMessage {
     /// Which mailbox to fetch
     mailbox: String,
 }
 
 impl Handler<FetchMessage> for MailActor {
-    type Result =
-        Result<Vec<(u32, imap_toolbox::ImapEmail)>, imap_toolbox::Errors>;
+    type Result = Result<Vec<(u32, ImapEmail)>, Errors>;
 
     fn handle(
         &mut self, msg: FetchMessage, _ctx: &mut Context<Self>,
     ) -> Self::Result {
         log::trace!("Actor for {} received {msg:?}", self.account.address);
         match imap_toolbox::fetch_mailbox(&self.account, &msg.mailbox) {
-            Ok(emails) => { Ok(emails) },
-            Err(e) => Err(e)
+            Ok(emails) => Ok(emails),
+            Err(e) => Err(e),
         }
     }
 }
-
