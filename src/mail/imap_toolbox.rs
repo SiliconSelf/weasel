@@ -1,6 +1,5 @@
 //! Various tools for handling IMAP functionality
 
-use std::{collections::HashMap, mem::take};
 use imap_proto::Address;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -22,7 +21,7 @@ pub(crate) struct Envelope {
     /// The subject header
     pub(crate) subject: Option<String>,
     /// The email sender(s)
-    pub(crate) from: Option<Vec<StringAddress>>
+    pub(crate) _from: Option<Vec<StringAddress>>
 }
 
 /// Errors that can occur while interacting with IMAP
@@ -111,15 +110,21 @@ fn process_subject(envelope: &imap_proto::types::Envelope) -> Option<String> {
     Some(string)
 }
 
+/// An email address that contains strings instead of &[u8]
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct StringAddress {
+    /// `John Doe` in `John Doe <jdoe@example.com>`
     name: Option<String>,
+    /// idk
     adl: Option<String>,
+    /// `jdoe` in `John Doe <jdoe@example.com>`
     mailbox: Option<String>,
+    /// `example.com` in `John Doe <jdoe@example.com>`
     host: Option<String>
 }
 
 impl StringAddress {
+    /// Creates a new string address
     fn new(name: Option<String>, adl: Option<String>, mailbox: Option<String>, host: Option<String>) -> Self {
         Self {
             name,
@@ -207,7 +212,7 @@ pub(crate) fn fetch_mailbox(
         log::debug!("Subject: {subject:?}");
         log::debug!("From: {from:?}");
 
-        returned.push(ImapEmail { uid: m.uid.expect("Mail server is not returning UIDs"), envelope: Envelope { date, subject, from } });
+        returned.push(ImapEmail { uid: m.uid.expect("Mail server is not returning UIDs"), envelope: Envelope { date, subject, _from: from } });
     }
     if imap_session.logout().is_err() {
         return Err(Errors::Logout);

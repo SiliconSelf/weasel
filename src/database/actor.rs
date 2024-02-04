@@ -27,7 +27,7 @@ impl DatabaseActor {
 
 impl Actor for DatabaseActor {
     type Context = Context<Self>;
-    fn started(&mut self, ctx: &mut Self::Context) {
+    fn started(&mut self, _ctx: &mut Self::Context) {
         log::trace!("Database actor started");
     }
 }

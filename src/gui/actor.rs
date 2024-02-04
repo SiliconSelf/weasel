@@ -1,3 +1,5 @@
+//! Contains the actor for GUI operations
+
 use actix::prelude::*;
 use druid::{widget::{Button, Flex, Label}, AppLauncher, LocalizedString, Widget, WidgetExt, WindowDesc};
 

@@ -13,8 +13,11 @@ pub(crate) struct ContactRecord {
 /// Represents an individual retrieved through IMAP
 #[derive(Serialize, Deserialize)]
 pub(crate) struct EmailRecord {
+    /// UID
     uid: u32,
+    /// Date
     date: Option<OffsetDateTime>,
+    /// Subject
     subject: Option<String>,
 
 }

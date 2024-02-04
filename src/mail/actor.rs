@@ -7,7 +7,7 @@ use actix::prelude::*;
 use super::imap_toolbox::{self, Errors};
 use crate::{
     config::Account,
-    database::{DatabaseActor, NewEmailMessage},
+    database::DatabaseActor,
 };
 
 /// An actor that handles all transactions for a given email account
@@ -15,7 +15,7 @@ pub(crate) struct MailActor {
     /// The address this actor represents
     pub(crate) account: Account,
     /// Address of the database actor for inter-actor communication
-    db_address: Addr<DatabaseActor>,
+    _db_address: Addr<DatabaseActor>,
 }
 
 impl MailActor {
@@ -26,7 +26,7 @@ impl MailActor {
     ) -> Self {
         Self {
             account,
-            db_address,
+            _db_address: db_address,
         }
     }
 }
@@ -55,15 +55,15 @@ impl Handler<FetchMessage> for MailActor {
         _ctx: &mut Context<Self>,
     ) -> Self::Result {
         log::trace!("Actor for {} received {msg:?}", self.account.address);
-        let mail =
+        let _mail =
             match imap_toolbox::fetch_mailbox(&self.account, &msg.mailbox) {
                 Ok(mail) => mail,
                 Err(e) => {
                     return Err(e);
                 }
             };
-        for message in mail {
-            let address = self.db_address.clone();
+        // for message in mail {
+        //     let address = self.db_address.clone();
             // tokio::task::spawn(async move {
             //     log::debug!("Sending message to database");
             //     address.send(NewEmailMessage {
@@ -71,7 +71,7 @@ impl Handler<FetchMessage> for MailActor {
             //     }).await.expect("Sending message failed");
             //     log::debug!("Message sent to database");
             // });
-        }
+        // }
         Ok(())
     }
 }
