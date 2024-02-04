@@ -2,6 +2,7 @@
 
 use std::{collections::HashMap, mem::take};
 use imap_proto::Address;
+use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 use crate::config::Account;
 use time::format_description::well_known::Rfc2822;
@@ -19,7 +20,9 @@ pub(crate) struct Envelope {
     /// OffsetDateTime parsed by time
     pub(crate) date: Option<OffsetDateTime>,
     /// The subject header
-    pub(crate) subject: Option<String>
+    pub(crate) subject: Option<String>,
+    /// The email sender(s)
+    pub(crate) from: Option<Vec<StringAddress>>
 }
 
 /// Errors that can occur while interacting with IMAP
@@ -108,21 +111,47 @@ fn process_subject(envelope: &imap_proto::types::Envelope) -> Option<String> {
     Some(string)
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub(crate) struct StringAddress {
+    name: Option<String>,
+    adl: Option<String>,
+    mailbox: Option<String>,
+    host: Option<String>
+}
+
+impl StringAddress {
+    fn new(name: Option<String>, adl: Option<String>, mailbox: Option<String>, host: Option<String>) -> Self {
+        Self {
+            name,
+            adl,
+            mailbox,
+            host
+        }
+    }
+}
+
+impl std::fmt::Display for StringAddress {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let name = self.name.clone().unwrap_or_default();
+        let mailbox = self.mailbox.clone().unwrap_or_default();
+        let host = self.host.clone().unwrap_or_default();
+        write!(f, "{name} <{mailbox}@{host}>").expect("Strings will always format");
+        Ok(())
+    }
+}
+
 /// Process a Vec of addresses
-fn process_addresses(envelope: &Option<Vec<Address>>) -> Option<Vec<String>> {
+fn process_addresses(envelope: &Option<Vec<Address>>) -> Option<Vec<StringAddress>> {
     let Some(envelope) = envelope else { return None; };
+    let mut returned = Vec::new();
     for address in envelope {
         let name = address.name.and_then(|x| String::from_utf8(x.to_vec()).ok());
         let adl = address.adl.and_then(|x| String::from_utf8(x.to_vec()).ok());
         let mailbox = address.mailbox.and_then(|x| String::from_utf8(x.to_vec()).ok());
         let host = address.host.and_then(|x| String::from_utf8(x.to_vec()).ok());
-
-        log::debug!("name: {name:?}");
-        log::debug!("adl: {adl:?}");
-        log::debug!("mailbox: {mailbox:?}");
-        log::debug!("host: {host:?}");
+        returned.push(StringAddress::new(name, adl, mailbox, host));
     }
-    None
+    Some(returned)
 }
 
 /// Creates an IMAP session with the given server
@@ -165,18 +194,20 @@ pub(crate) fn fetch_mailbox(
     for m in &messages {
         let mut date = None;
         let mut subject = None;
+        let mut from = None;
         // Process the message envelope
         if let Some(envelope) = m.envelope() {
             let envelope = envelope.to_owned();
             date = process_date(envelope);
             subject = process_subject(envelope);
-            process_addresses(&envelope.from);
+            from = process_addresses(&envelope.from);
         }
         
-        log::debug!("{date:?}");
-        log::debug!("{subject:?}");
+        log::debug!("Date: {date:?}");
+        log::debug!("Subject: {subject:?}");
+        log::debug!("From: {from:?}");
 
-        returned.push(ImapEmail { uid: m.uid.expect("Mail server is not returning UIDs"), envelope: Envelope { date, subject } });
+        returned.push(ImapEmail { uid: m.uid.expect("Mail server is not returning UIDs"), envelope: Envelope { date, subject, from } });
     }
     if imap_session.logout().is_err() {
         return Err(Errors::Logout);

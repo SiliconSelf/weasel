@@ -27,6 +27,9 @@ impl DatabaseActor {
 
 impl Actor for DatabaseActor {
     type Context = Context<Self>;
+    fn started(&mut self, ctx: &mut Self::Context) {
+        log::trace!("Database actor started");
+    }
 }
 
 /// Message containing a new email to insert into the database

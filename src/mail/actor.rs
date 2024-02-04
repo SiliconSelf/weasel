@@ -24,7 +24,6 @@ impl MailActor {
         account: Account,
         db_address: Addr<DatabaseActor>,
     ) -> Self {
-        log::debug!("Created new actor for {}", account.address);
         Self {
             account,
             db_address,
@@ -34,6 +33,9 @@ impl MailActor {
 
 impl Actor for MailActor {
     type Context = Context<Self>;
+    fn started(&mut self, _ctx: &mut Self::Context) {
+        log::trace!("Started mail actor for {}", self.account.address);
+    }
 }
 
 /// A Message to fetch a given inbox from the account this actor represents
@@ -61,9 +63,14 @@ impl Handler<FetchMessage> for MailActor {
                 }
             };
         for message in mail {
-            self.db_address.do_send(NewEmailMessage {
-                email: message,
-            });
+            let address = self.db_address.clone();
+            // tokio::task::spawn(async move {
+            //     log::debug!("Sending message to database");
+            //     address.send(NewEmailMessage {
+            //         email: message,
+            //     }).await.expect("Sending message failed");
+            //     log::debug!("Message sent to database");
+            // });
         }
         Ok(())
     }
