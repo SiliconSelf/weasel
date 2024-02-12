@@ -55,7 +55,7 @@ wildcard_dependencies = "warn"
 workspace = true
 
 [dependencies]
-actix = "0.13.2"
+actix = "0.13.3"
 druid = "0.8.3"
 figment = { version = "0.10.14", features = ["toml", "env"] }
 futures = "0.3.30"
