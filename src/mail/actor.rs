@@ -57,19 +57,26 @@ impl Handler<FetchMessage> for MailActor {
             match imap_toolbox::fetch_mailbox(&self.account, &msg.mailbox) {
                 Ok(mail) => mail,
                 Err(e) => {
-                    log::warn!("Actor for {} received error \"{e:?}\" when running {msg:?}", self.account.address);
+                    log::warn!(
+                        "Actor for {} received error \"{e:?}\" when running \
+                         {msg:?}",
+                        self.account.address
+                    );
                     return Err(e);
                 }
             };
-            log::trace!("Actor for {} fetched mail", self.account.address);
+        log::trace!("Actor for {} fetched mail", self.account.address);
         for message in mail {
             let address = self.db_address.clone();
             actix::spawn(async move {
                 log::debug!("Sending message to database");
-                let _weh = address.send(crate::database::NewEmailMessage {
-                    email: message,
-            }).await.expect("Sending message failed");
-            log::debug!("Message sent to database"); 
+                let _weh = address
+                    .send(crate::database::NewEmailMessage {
+                        email: message,
+                    })
+                    .await
+                    .expect("Sending message failed");
+                log::debug!("Message sent to database");
             });
         }
         Ok(())

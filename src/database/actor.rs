@@ -48,24 +48,36 @@ impl Handler<NewEmailMessage> for DatabaseActor {
         msg: NewEmailMessage,
         _ctx: &mut Context<Self>,
     ) -> Self::Result {
-        log::trace!(
-            "Database actor received {msg:?}"
-        );
+        log::trace!("Database actor received {msg:?}");
         // Create the email record from IMAP response
         let email = msg.email;
         let email_record = EmailRecord::from(email);
 
         // Run the async database operations
-        let database = &self.database;
-        futures::executor::block_on(async {
-            database.use_db("mail").await.expect(
-                "Failed to change to mail database. A malfunctioning database \
-                 is not recoverable.",
-            );
-            let _: Vec<EmailRecord> =
-                database.create("mail").content(email_record).await.expect("");
+        let database = self.database.clone();
+        actix::spawn(async move {
+            database.use_ns("weasel").use_db("mail").await.expect("Failed to change to mail database. A malfunctioning database is not recoverable.");
+            let _: Vec<EmailRecord> = database.create("mail").content(email_record).await.expect("");
         });
+        log::trace!("Added new email");
 
         Ok(())
+    }
+}
+
+/// Test
+#[derive(Message, Debug)]
+#[rtype(result = "()")]
+pub(crate) struct GuiMessage;
+
+impl Handler<GuiMessage> for DatabaseActor {
+    type Result = ();
+
+    fn handle(
+        &mut self,
+        msg: GuiMessage,
+        _ctx: &mut Self::Context,
+    ) -> Self::Result {
+        log::trace!("DatabaseActor received {msg:?}");
     }
 }

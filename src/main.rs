@@ -45,10 +45,10 @@ fn main() {
 
     // Start the GUI
     let gui_arbiter = Arbiter::new();
+    let gui_database_addr = database_addr.clone();
     gui_arbiter.spawn(async move {
-        let gui_actor = GuiActor::start(GuiActor::new());
+        let gui_actor = GuiActor::start(GuiActor::new(gui_database_addr));
         gui_actor.send(StartMessage).await.expect("GUI actor panicked");
-        log::trace!("Go go gadget std::process:exit");
         std::process::exit(0);
     });
 
