@@ -10,12 +10,18 @@ mod gui;
 mod mail;
 
 use database::DatabaseActor;
+use gui::watchdog_actor::GuiWatchdogActor;
 use mail::{FetchMessage, MailActor};
 
 use crate::gui::actor::{GuiActor, StartMessage};
 
 fn main() {
-    simple_logger::init().expect("Failed to initialize logging");
+    simple_logger::init_with_level(if cfg!(debug_assertions) {
+        log::Level::Trace
+    } else {
+        log::Level::Info
+    })
+    .expect("Failed to initialize logging");
     config::init();
 
     let system = System::new();
@@ -43,13 +49,14 @@ fn main() {
         mail_actors.insert(user.address.clone(), addr);
     }
 
+    let gui_watchdog_addr = system
+        .block_on(async { GuiWatchdogActor::start(GuiWatchdogActor::new()) });
+
     // Start the GUI
     let gui_arbiter = Arbiter::new();
-    let gui_database_addr = database_addr.clone();
     gui_arbiter.spawn(async move {
-        let gui_actor = GuiActor::start(GuiActor::new(gui_database_addr));
+        let gui_actor = GuiActor::start(GuiActor::new(gui_watchdog_addr));
         gui_actor.send(StartMessage).await.expect("GUI actor panicked");
-        std::process::exit(0);
     });
 
     system.run().expect("System aborted");

@@ -56,8 +56,12 @@ impl Handler<NewEmailMessage> for DatabaseActor {
         // Run the async database operations
         let database = self.database.clone();
         actix::spawn(async move {
-            database.use_ns("weasel").use_db("mail").await.expect("Failed to change to mail database. A malfunctioning database is not recoverable.");
-            let _: Vec<EmailRecord> = database.create("mail").content(email_record).await.expect("");
+            database.use_ns("weasel").use_db("mail").await.expect(
+                "Failed to change to mail database. A malfunctioning database \
+                 is not recoverable.",
+            );
+            let _: Vec<EmailRecord> =
+                database.create("mail").content(email_record).await.expect("");
         });
         log::trace!("Added new email");
 
