@@ -5,10 +5,7 @@
 use actix::prelude::*;
 
 use super::imap_toolbox::{self, Errors};
-use crate::{
-    config::Account,
-    database::DatabaseActor,
-};
+use crate::{config::Account, database::DatabaseActor};
 
 /// An actor that handles all transactions for a given email account
 pub(crate) struct MailActor {
@@ -33,6 +30,7 @@ impl MailActor {
 
 impl Actor for MailActor {
     type Context = Context<Self>;
+
     fn started(&mut self, _ctx: &mut Self::Context) {
         log::trace!("Started mail actor for {}", self.account.address);
     }
@@ -64,13 +62,13 @@ impl Handler<FetchMessage> for MailActor {
             };
         // for message in mail {
         //     let address = self.db_address.clone();
-            // tokio::task::spawn(async move {
-            //     log::debug!("Sending message to database");
-            //     address.send(NewEmailMessage {
-            //         email: message,
-            //     }).await.expect("Sending message failed");
-            //     log::debug!("Message sent to database");
-            // });
+        // tokio::task::spawn(async move {
+        //     log::debug!("Sending message to database");
+        //     address.send(NewEmailMessage {
+        //         email: message,
+        //     }).await.expect("Sending message failed");
+        //     log::debug!("Message sent to database");
+        // });
         // }
         Ok(())
     }

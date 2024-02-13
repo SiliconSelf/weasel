@@ -1,7 +1,10 @@
 //! Contains the actor for GUI operations
 
 use actix::prelude::*;
-use druid::{widget::{Button, Flex, Label}, AppLauncher, LocalizedString, Widget, WidgetExt, WindowDesc};
+use druid::{
+    widget::{Button, Flex, Label},
+    AppLauncher, LocalizedString, Widget, WidgetExt, WindowDesc,
+};
 
 /// An actor that handles rendering the GUI with druid
 pub(crate) struct GuiActor;
@@ -10,7 +13,7 @@ impl Actor for GuiActor {
     type Context = Context<Self>;
 
     fn started(&mut self, _ctx: &mut Self::Context) {
-        log::trace!("GUI Actor started");    
+        log::trace!("GUI Actor started");
     }
 }
 
@@ -28,11 +31,19 @@ pub(crate) struct StartMessage;
 
 impl Handler<StartMessage> for GuiActor {
     type Result = ();
-    fn handle(&mut self, msg: StartMessage, _ctx: &mut Context<Self>) -> Self::Result {
+
+    fn handle(
+        &mut self,
+        msg: StartMessage,
+        _ctx: &mut Context<Self>,
+    ) -> Self::Result {
         log::trace!("GuiActor received {msg:?}");
         let main_window = WindowDesc::new(ui_builder());
         let data = 0_u32;
-        AppLauncher::with_window(main_window).log_to_console().launch(data).expect("GUI Panicked");
+        AppLauncher::with_window(main_window)
+            .log_to_console()
+            .launch(data)
+            .expect("GUI Panicked");
         log::trace!("Window has closed. Kill program.");
     }
 }

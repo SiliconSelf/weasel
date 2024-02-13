@@ -19,7 +19,6 @@ pub(crate) struct EmailRecord {
     date: Option<OffsetDateTime>,
     /// Subject
     subject: Option<String>,
-
 }
 
 impl From<ImapEmail> for EmailRecord {
@@ -27,7 +26,7 @@ impl From<ImapEmail> for EmailRecord {
         Self {
             uid: value.uid,
             date: value.envelope.date,
-            subject: value.envelope.subject
+            subject: value.envelope.subject,
         }
     }
 }

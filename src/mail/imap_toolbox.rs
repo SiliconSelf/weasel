@@ -2,16 +2,16 @@
 
 use imap_proto::Address;
 use serde::{Deserialize, Serialize};
-use time::OffsetDateTime;
+use time::{format_description::well_known::Rfc2822, OffsetDateTime};
+
 use crate::config::Account;
-use time::format_description::well_known::Rfc2822;
 
 /// Represents an email retrieved through IMAP
 pub(crate) struct ImapEmail {
     /// Headers of the email
     pub(crate) uid: u32,
     /// The envelope of the message
-    pub(crate) envelope: Envelope
+    pub(crate) envelope: Envelope,
 }
 
 /// See [RFC 2822](https://datatracker.ietf.org/doc/html/rfc2822#section-3.6) for more details.
@@ -21,7 +21,7 @@ pub(crate) struct Envelope {
     /// The subject header
     pub(crate) subject: Option<String>,
     /// The email sender(s)
-    pub(crate) _from: Option<Vec<StringAddress>>
+    pub(crate) _from: Option<Vec<StringAddress>>,
 }
 
 /// Errors that can occur while interacting with IMAP
@@ -96,7 +96,9 @@ pub(crate) enum Errors {
 // }
 
 /// Process a date into an offset datetime
-fn process_date(envelope: &imap_proto::types::Envelope) -> Option<OffsetDateTime> {
+fn process_date(
+    envelope: &imap_proto::types::Envelope,
+) -> Option<OffsetDateTime> {
     let date = envelope.date?;
     let string = String::from_utf8(date.to_vec()).ok()?;
     let date = OffsetDateTime::parse(&string, &Rfc2822).ok()?;
@@ -120,17 +122,22 @@ pub(crate) struct StringAddress {
     /// `jdoe` in `John Doe <jdoe@example.com>`
     mailbox: Option<String>,
     /// `example.com` in `John Doe <jdoe@example.com>`
-    host: Option<String>
+    host: Option<String>,
 }
 
 impl StringAddress {
     /// Creates a new string address
-    fn new(name: Option<String>, adl: Option<String>, mailbox: Option<String>, host: Option<String>) -> Self {
+    fn new(
+        name: Option<String>,
+        adl: Option<String>,
+        mailbox: Option<String>,
+        host: Option<String>,
+    ) -> Self {
         Self {
             name,
             adl,
             mailbox,
-            host
+            host,
         }
     }
 }
@@ -140,27 +147,37 @@ impl std::fmt::Display for StringAddress {
         let name = self.name.clone().unwrap_or_default();
         let mailbox = self.mailbox.clone().unwrap_or_default();
         let host = self.host.clone().unwrap_or_default();
-        write!(f, "{name} <{mailbox}@{host}>").expect("Strings will always format");
+        write!(f, "{name} <{mailbox}@{host}>")
+            .expect("Strings will always format");
         Ok(())
     }
 }
 
 /// Process a Vec of addresses
-fn process_addresses(envelope: &Option<Vec<Address>>) -> Option<Vec<StringAddress>> {
-    let Some(envelope) = envelope else { return None; };
+fn process_addresses(
+    envelope: &Option<Vec<Address>>,
+) -> Option<Vec<StringAddress>> {
+    let Some(envelope) = envelope else {
+        return None;
+    };
     let mut returned = Vec::new();
     for address in envelope {
-        let name = address.name.and_then(|x| String::from_utf8(x.to_vec()).ok());
+        let name =
+            address.name.and_then(|x| String::from_utf8(x.to_vec()).ok());
         let adl = address.adl.and_then(|x| String::from_utf8(x.to_vec()).ok());
-        let mailbox = address.mailbox.and_then(|x| String::from_utf8(x.to_vec()).ok());
-        let host = address.host.and_then(|x| String::from_utf8(x.to_vec()).ok());
+        let mailbox =
+            address.mailbox.and_then(|x| String::from_utf8(x.to_vec()).ok());
+        let host =
+            address.host.and_then(|x| String::from_utf8(x.to_vec()).ok());
         returned.push(StringAddress::new(name, adl, mailbox, host));
     }
     Some(returned)
 }
 
 /// Creates an IMAP session with the given server
-fn create_session(account: &Account) -> Result<imap::Session<native_tls::TlsStream<std::net::TcpStream>>, Errors> {
+fn create_session(
+    account: &Account,
+) -> Result<imap::Session<native_tls::TlsStream<std::net::TcpStream>>, Errors> {
     let tls = native_tls::TlsConnector::builder().build().expect(
         "Failed to build TLS Connector. The application will never work \
          without this.",
@@ -189,8 +206,7 @@ pub(crate) fn fetch_mailbox(
     if imap_session.select(mailbox).is_err() {
         return Err(Errors::Select);
     };
-    let Ok(messages) = imap_session.fetch("*", "(UID ENVELOPE)")
-    else {
+    let Ok(messages) = imap_session.fetch("*", "(UID ENVELOPE)") else {
         return Err(Errors::Fetch);
     };
 
@@ -207,12 +223,19 @@ pub(crate) fn fetch_mailbox(
             subject = process_subject(envelope);
             from = process_addresses(&envelope.from);
         }
-        
+
         log::debug!("Date: {date:?}");
         log::debug!("Subject: {subject:?}");
         log::debug!("From: {from:?}");
 
-        returned.push(ImapEmail { uid: m.uid.expect("Mail server is not returning UIDs"), envelope: Envelope { date, subject, _from: from } });
+        returned.push(ImapEmail {
+            uid: m.uid.expect("Mail server is not returning UIDs"),
+            envelope: Envelope {
+                date,
+                subject,
+                _from: from,
+            },
+        });
     }
     if imap_session.logout().is_err() {
         return Err(Errors::Logout);

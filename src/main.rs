@@ -6,8 +6,8 @@ use actix::prelude::*;
 
 mod config;
 mod database;
-mod mail;
 mod gui;
+mod mail;
 
 use database::DatabaseActor;
 use mail::{FetchMessage, MailActor};
@@ -24,17 +24,25 @@ fn main() {
         .get()
         .expect("Configuration has not been initialized");
 
-    let database_addr = system.block_on(async { DatabaseActor::start(DatabaseActor::new().await) });
+    let database_addr = system
+        .block_on(async { DatabaseActor::start(DatabaseActor::new().await) });
 
     // Start mail actors for all accounts
     let mut mail_actors: HashMap<String, Addr<MailActor>> = HashMap::new();
     for user in config.get_accounts() {
-        let addr = system.block_on(async { MailActor::start( MailActor::new(user.clone(), database_addr.clone())) });
+        let addr = system.block_on(async {
+            MailActor::start(MailActor::new(
+                user.clone(),
+                database_addr.clone(),
+            ))
+        });
         // This really shouldn't be in the main thread
-        addr.do_send( FetchMessage { mailbox: ("INBOX".to_owned()) });
+        addr.do_send(FetchMessage {
+            mailbox: ("INBOX".to_owned()),
+        });
         mail_actors.insert(user.address.clone(), addr);
     }
-    
+
     // Start the GUI
     let gui_arbiter = Arbiter::new();
     gui_arbiter.spawn(async move {
