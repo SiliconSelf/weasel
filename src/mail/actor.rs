@@ -69,14 +69,13 @@ impl Handler<FetchMessage> for MailActor {
         for message in mail {
             let address = self.db_address.clone();
             actix::spawn(async move {
-                log::debug!("Sending message to database");
-                let _weh = address
+                log::trace!("Sending message to database");
+                address
                     .send(crate::database::NewEmailMessage {
                         email: message,
                     })
                     .await
                     .expect("Sending message failed");
-                log::debug!("Message sent to database");
             });
         }
         Ok(())

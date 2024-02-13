@@ -34,14 +34,14 @@ impl Actor for DatabaseActor {
 
 /// Message containing a new email to insert into the database
 #[derive(Message, Debug)]
-#[rtype(result = "Result<(), ()>")]
+#[rtype(result = "()")]
 pub(crate) struct NewEmailMessage {
     /// The new email to insert into the database
     pub(crate) email: ImapEmail,
 }
 
 impl Handler<NewEmailMessage> for DatabaseActor {
-    type Result = Result<(), ()>;
+    type Result = ();
 
     fn handle(
         &mut self,
@@ -64,8 +64,6 @@ impl Handler<NewEmailMessage> for DatabaseActor {
                 database.create("mail").content(email_record).await.expect("");
         });
         log::trace!("Added new email");
-
-        Ok(())
     }
 }
 
