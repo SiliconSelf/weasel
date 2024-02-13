@@ -18,7 +18,6 @@ impl DatabaseActor {
         let db = Surreal::new::<Mem>(())
             .await
             .expect("Failed to create in-memory surreal database");
-        log::debug!("Created database actor");
         Self {
             database: db,
         }
@@ -34,7 +33,7 @@ impl Actor for DatabaseActor {
 }
 
 /// Message containing a new email to insert into the database
-#[derive(Message)]
+#[derive(Message, Debug)]
 #[rtype(result = "Result<(), ()>")]
 pub(crate) struct NewEmailMessage {
     /// The new email to insert into the database
@@ -50,7 +49,7 @@ impl Handler<NewEmailMessage> for DatabaseActor {
         _ctx: &mut Context<Self>,
     ) -> Self::Result {
         log::trace!(
-            "Database actor received new email to insert into database"
+            "Database actor received {msg:?}"
         );
         // Create the email record from IMAP response
         let email = msg.email;

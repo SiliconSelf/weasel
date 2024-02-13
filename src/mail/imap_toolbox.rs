@@ -7,6 +7,7 @@ use time::{format_description::well_known::Rfc2822, OffsetDateTime};
 use crate::config::Account;
 
 /// Represents an email retrieved through IMAP
+#[derive(Debug)]
 pub(crate) struct ImapEmail {
     /// Headers of the email
     pub(crate) uid: u32,
@@ -15,6 +16,7 @@ pub(crate) struct ImapEmail {
 }
 
 /// See [RFC 2822](https://datatracker.ietf.org/doc/html/rfc2822#section-3.6) for more details.
+#[derive(Debug)]
 pub(crate) struct Envelope {
     /// OffsetDateTime parsed by time
     pub(crate) date: Option<OffsetDateTime>,

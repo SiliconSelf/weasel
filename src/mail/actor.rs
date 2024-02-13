@@ -12,7 +12,7 @@ pub(crate) struct MailActor {
     /// The address this actor represents
     pub(crate) account: Account,
     /// Address of the database actor for inter-actor communication
-    _db_address: Addr<DatabaseActor>,
+    db_address: Addr<DatabaseActor>,
 }
 
 impl MailActor {
@@ -23,7 +23,7 @@ impl MailActor {
     ) -> Self {
         Self {
             account,
-            _db_address: db_address,
+            db_address,
         }
     }
 }
@@ -53,23 +53,25 @@ impl Handler<FetchMessage> for MailActor {
         _ctx: &mut Context<Self>,
     ) -> Self::Result {
         log::trace!("Actor for {} received {msg:?}", self.account.address);
-        let _mail =
+        let mail =
             match imap_toolbox::fetch_mailbox(&self.account, &msg.mailbox) {
                 Ok(mail) => mail,
                 Err(e) => {
+                    log::warn!("Actor for {} received error \"{e:?}\" when running {msg:?}", self.account.address);
                     return Err(e);
                 }
             };
-        // for message in mail {
-        //     let address = self.db_address.clone();
-        // tokio::task::spawn(async move {
-        //     log::debug!("Sending message to database");
-        //     address.send(NewEmailMessage {
-        //         email: message,
-        //     }).await.expect("Sending message failed");
-        //     log::debug!("Message sent to database");
-        // });
-        // }
+            log::trace!("Actor for {} fetched mail", self.account.address);
+        for message in mail {
+            let address = self.db_address.clone();
+            actix::spawn(async move {
+                log::debug!("Sending message to database");
+                let _weh = address.send(crate::database::NewEmailMessage {
+                    email: message,
+            }).await.expect("Sending message failed");
+            log::debug!("Message sent to database"); 
+            });
+        }
         Ok(())
     }
 }
