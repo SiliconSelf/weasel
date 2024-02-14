@@ -30,7 +30,7 @@ pub(crate) fn init() {
     GLOBAL_CONFIG.set(config).unwrap_or_else(|_| {
         panic!("Failed to set GLOBAL_CONFIG");
     });
-    log::debug!("Loaded program configuration");
+    log::trace!("Loaded program configuration");
 }
 
 /// Represents a single email account for the `MailAgent` to manage
