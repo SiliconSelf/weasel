@@ -57,6 +57,7 @@ fn main() {
     gui_arbiter.spawn(async move {
         let gui_actor = GuiActor::start(GuiActor::new(gui_watchdog_addr));
         gui_actor.send(StartMessage).await.expect("GUI actor panicked");
+        System::current().stop();
     });
 
     system.run().expect("System aborted");
