@@ -23,7 +23,7 @@ pub(crate) struct Envelope {
     /// The subject header
     pub(crate) subject: Option<String>,
     /// The email sender(s)
-    pub(crate) _from: Option<Vec<StringAddress>>,
+    pub(crate) from: Option<Vec<StringAddress>>,
 }
 
 /// Errors that can occur while interacting with IMAP
@@ -226,16 +226,12 @@ pub(crate) fn fetch_mailbox(
             from = process_addresses(&envelope.from);
         }
 
-        log::debug!("Date: {date:?}");
-        log::debug!("Subject: {subject:?}");
-        log::debug!("From: {from:?}");
-
         returned.push(ImapEmail {
             uid: m.uid.expect("Mail server is not returning UIDs"),
             envelope: Envelope {
                 date,
                 subject,
-                _from: from,
+                from,
             },
         });
     }
