@@ -57,7 +57,7 @@ workspace = true
 [dependencies]
 actix = "0.13.3"
 druid = "0.8.3"
-figment = { version = "0.10.16", features = ["toml", "env"] }
+figment = { version = "0.10.18", features = ["toml", "env"] }
 futures = "0.3.30"
 imap = "2.4.1"
 imap-proto = "0.10.2"
