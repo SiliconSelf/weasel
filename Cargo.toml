@@ -65,7 +65,7 @@ log = "0.4.21"
 mail = "0.7.0"
 native-tls = "0.2.11"
 once_cell = "1.19.0"
-serde = { version = "1.0.199", features = ["derive"] }
+serde = { version = "1.0.200", features = ["derive"] }
 simple_logger = "5.0.0"
 surrealdb = { version = "1.4.2", features = ["kv-mem"] }
 time = { version = "0.3.36", features = ["parsing", "serde"] }
