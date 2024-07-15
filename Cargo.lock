@@ -18,7 +18,7 @@ dependencies = [
  "futures-sink",
  "futures-task",
  "futures-util",
- "log 0.4.21",
+ "log 0.4.22",
  "once_cell",
  "parking_lot",
  "pin-project-lite",
@@ -1161,7 +1161,7 @@ version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c533630cf40e9caa44bd91aadc88a75d75a4c3a12b4cfde353cbed41daa1e1f1"
 dependencies = [
- "log 0.4.21",
+ "log 0.4.22",
 ]
 
 [[package]]
@@ -1599,7 +1599,7 @@ dependencies = [
  "float_next_after",
  "geo-types",
  "geographiclib-rs",
- "log 0.4.21",
+ "log 0.4.22",
  "num-traits",
  "robust",
  "rstar",
@@ -1616,7 +1616,7 @@ dependencies = [
  "float_next_after",
  "geo-types",
  "geographiclib-rs",
- "log 0.4.21",
+ "log 0.4.22",
  "num-traits",
  "robust",
  "rstar",
@@ -2355,14 +2355,14 @@ version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e19e8d5c34a3e0e2223db8e060f9e8264aeeb5c5fc64a4ee9965c062211c024b"
 dependencies = [
- "log 0.4.21",
+ "log 0.4.22",
 ]
 
 [[package]]
 name = "log"
-version = "0.4.21"
+version = "0.4.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90ed8c1e510134f979dbc4f070f87d4313098b704861a105fe34231c70a3901c"
+checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
 
 [[package]]
 name = "lut"
@@ -2641,7 +2641,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8614eb2c83d59d1c8cc974dd3f920198647674a0a035e1af1fa58707e317466"
 dependencies = [
  "libc",
- "log 0.4.21",
+ "log 0.4.22",
  "openssl",
  "openssl-probe",
  "openssl-sys",
@@ -3666,7 +3666,7 @@ dependencies = [
  "hyper-rustls",
  "ipnet",
  "js-sys",
- "log 0.4.21",
+ "log 0.4.22",
  "mime",
  "mime_guess",
  "once_cell",
@@ -3962,7 +3962,7 @@ version = "0.21.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fecbfb7b1444f477b345853b1fce097a2c6fb637b2bfb87e6bc5db0f043fae4"
 dependencies = [
- "log 0.4.21",
+ "log 0.4.22",
  "ring 0.17.7",
  "rustls-webpki",
  "sct",
@@ -4276,7 +4276,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8c5dfa5e08767553704aa0ffd9d9794d527103c736aba9854773851fd7497eb"
 dependencies = [
  "colored",
- "log 0.4.21",
+ "log 0.4.22",
  "time",
  "windows-sys 0.48.0",
 ]
@@ -4930,7 +4930,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "212d5dcb2a1ce06d81107c3d0ffa3121fe974b73f068c8282cb1c32328113b6c"
 dependencies = [
  "futures-util",
- "log 0.4.21",
+ "log 0.4.22",
  "rustls",
  "tokio",
  "tokio-rustls",
@@ -5104,7 +5104,7 @@ dependencies = [
  "data-encoding",
  "http",
  "httparse",
- "log 0.4.21",
+ "log 0.4.22",
  "rand 0.8.5",
  "rustls",
  "sha1",
@@ -5408,7 +5408,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fcdc935b63408d58a32f8cc9738a0bffd8f05cc7c002086c6ef20b7312ad9dcd"
 dependencies = [
  "bumpalo",
- "log 0.4.21",
+ "log 0.4.22",
  "once_cell",
  "proc-macro2",
  "quote",
@@ -5493,7 +5493,7 @@ dependencies = [
  "futures 0.3.30",
  "imap",
  "imap-proto 0.16.5",
- "log 0.4.21",
+ "log 0.4.22",
  "mail",
  "native-tls",
  "once_cell",
@@ -5728,7 +5728,7 @@ dependencies = [
  "async_io_stream",
  "futures 0.3.30",
  "js-sys",
- "log 0.4.21",
+ "log 0.4.22",
  "pharos",
  "rustc_version",
  "send_wrapper",

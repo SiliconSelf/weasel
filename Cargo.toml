@@ -61,7 +61,7 @@ figment = { version = "0.10.19", features = ["toml", "env"] }
 futures = "0.3.30"
 imap = "2.4.1"
 imap-proto = "0.16.5"
-log = "0.4.21"
+log = "0.4.22"
 mail = "0.7.0"
 native-tls = "0.2.12"
 once_cell = "1.19.0"
