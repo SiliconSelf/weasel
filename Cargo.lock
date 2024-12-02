@@ -3699,24 +3699,6 @@ checksum = "8c31b5c4033f8fdde8700e4657be2c497e7288f01515be52168c631e2e4d4086"
 
 [[package]]
 name = "revision"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87eb86913082f8976b06d07a59f17df9120e6f38b882cf3fc5a45b4499e224b6"
-dependencies = [
- "bincode",
- "chrono",
- "geo 0.26.0",
- "regex",
- "revision-derive 0.5.0",
- "roaring",
- "rust_decimal",
- "serde",
- "thiserror",
- "uuid",
-]
-
-[[package]]
-name = "revision"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "588784c1d9453cfd2ce1b7aff06c903513677cf0e63779a0a3085ee8a44f5b17"
@@ -3725,25 +3707,12 @@ dependencies = [
  "chrono",
  "geo 0.26.0",
  "regex",
- "revision-derive 0.7.0",
+ "revision-derive",
  "roaring",
  "rust_decimal",
  "serde",
  "thiserror",
  "uuid",
-]
-
-[[package]]
-name = "revision-derive"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf996fc5f61f1dbec35799b5c00c6dda12e8862e8cb782ed24e10d0292e60ed3"
-dependencies = [
- "darling",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn 2.0.85",
 ]
 
 [[package]]
@@ -4456,9 +4425,9 @@ checksum = "81cdd64d312baedb58e21336b31bc043b77e01cc99033ce76ef539f78e965ebc"
 
 [[package]]
 name = "surrealdb"
-version = "1.5.4"
+version = "1.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "430b7d33686ece41796236416707398574da147f78c6b4e5dc9a10592907029b"
+checksum = "dac5a27c63a05414c1c623e0a5e75969142c4fa157bbe59fa259c620df83d252"
 dependencies = [
  "async-channel",
  "bincode",
@@ -4473,15 +4442,15 @@ dependencies = [
  "path-clean",
  "pharos",
  "reqwest",
- "revision 0.7.0",
+ "revision",
  "ring 0.17.7",
  "rust_decimal",
  "rustls",
  "semver",
  "serde",
  "serde_json",
- "surrealdb-core 1.2.1",
- "surrealdb-core 2.0.0-1.5.4",
+ "surrealdb-core 1.5.6",
+ "surrealdb-core 2.0.0-1.5.6",
  "thiserror",
  "tokio",
  "tokio-tungstenite",
@@ -4496,9 +4465,9 @@ dependencies = [
 
 [[package]]
 name = "surrealdb-core"
-version = "1.2.1"
+version = "1.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fcf33ccbc2348089fab502d38198f86762fc951ec90413fbd63f9195e76e6e08"
+checksum = "cd916d013234ff20ea94196a98a0f9d1f1cd85501a5b01c199cd24fa8168afb7"
 dependencies = [
  "addr",
  "any_ascii",
@@ -4536,7 +4505,7 @@ dependencies = [
  "radix_trie",
  "rand 0.8.5",
  "regex",
- "revision 0.5.0",
+ "revision",
  "ring 0.17.7",
  "roaring",
  "rust-stemmers",
@@ -4565,9 +4534,9 @@ dependencies = [
 
 [[package]]
 name = "surrealdb-core"
-version = "2.0.0-1.5.4"
+version = "2.0.0-1.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4da0070ee77cc4a6938000a365c3c2cf0233708d2ac16feb680a6d90a3535025"
+checksum = "74bd7de1afe43eee3cefa445cde76151353a38aee93cf1ddfc434186ac06c179"
 dependencies = [
  "addr",
  "ahash 0.8.11",
@@ -4614,7 +4583,7 @@ dependencies = [
  "rand 0.8.5",
  "reblessive",
  "regex",
- "revision 0.7.0",
+ "revision",
  "ring 0.17.7",
  "rmpv",
  "roaring",
